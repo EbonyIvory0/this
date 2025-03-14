@@ -1,0 +1,42 @@
+[
+    {
+        "domain": ".staging.sphera.work",
+        "expiry": 1773218074,
+        "httpOnly": false,
+        "name": "sphera-staging__refreshToken",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "%22eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3NiwiY29tcGFueUlkIjo4NCwiaWF0IjoxNzQxNjgyMDc0LCJleHAiOjE3NDI1NDYwNzR9.4ki19OAUZzX1RUH0j2gpcRnG7W_lsdXEt0EyT7Bxmqc%22"
+    },
+    {
+        "domain": ".staging.sphera.work",
+        "expiry": 1776242076,
+        "httpOnly": false,
+        "name": "sphera-staging__checkedAccounts",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "[84]"
+    },
+    {
+        "domain": ".staging.sphera.work",
+        "expiry": 1773218074,
+        "httpOnly": false,
+        "name": "sphera-staging__authToken",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "%22eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE3NiwiY29tcGFueUlkIjo4NCwiaWF0IjoxNzQxNjgyMDc0LCJleHAiOjE3NDE2ODIzNzR9.AXNy_dFjxrx819oGbpyvBQmx3wCKy4MJPiQbwmeCO7w%22"
+    },
+    {
+        "domain": ".staging.sphera.work",
+        "expiry": 1776242076,
+        "httpOnly": false,
+        "name": "sphera-staging__deviceId",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "%22b34bab2c-7e62-46ba-a01c-b96c8531859e%22"
+    }
+]
