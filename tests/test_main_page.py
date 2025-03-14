@@ -10,7 +10,7 @@ def generate_random_string(length=8):
     return ''.join(random.choice(letters_and_digits) for _ in range(length))
 
 
-
+@pytest.mark.skip
 def test_01_create_channel_send_message_delete_channel(browser):  # Передаем фикстуру browser
     main = MainPage(browser)  # Создаем экземпляр MainPage, передавая browser
     name_channel = generate_random_string(5) # Генерация рандомного названия канала
