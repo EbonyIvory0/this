@@ -34,6 +34,8 @@ class BasePage(object):
         except TimeoutException:
             print("Элемент не найден")
 
+
+
     def visibility_of_element(self, locator):
         """Ожидание пока элемент будет видимым"""
         try:
@@ -62,3 +64,13 @@ class BasePage(object):
             )
         except TimeoutException:
             print("Элемент не найден")  
+
+
+    def invisibility_of_all_elements(self, locator):
+        """Ожидание, пока все элементы, найденные по локатору, станут невидимыми."""
+        try:
+            return WebDriverWait(self.browser, 10).until(
+                lambda driver: all(not element.is_displayed() for element in driver.find_elements(*locator))
+            )
+        except TimeoutException:
+            pass

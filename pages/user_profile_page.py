@@ -8,8 +8,6 @@ from selenium.webdriver.common.keys import Keys
 import random
 
 
-
-
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -71,7 +69,7 @@ class UserProfile(BasePage):
 
             self.wait_element(
             self.loc.LAST_NAME_FIELD
-            ).send_keys(Keys.CONTROL + "a", Keys.DELETE)
+            ).send_keys(Keys.COMMAND + "a", Keys.BACK_SPACE)
 
             self.wait_element(
             self.loc.LAST_NAME_FIELD
@@ -90,7 +88,7 @@ class UserProfile(BasePage):
 
             self.wait_element(
             self.loc.FIRST_NAME_FIELD
-            ).send_keys(Keys.CONTROL + "a", Keys.DELETE)
+            ).send_keys(Keys.COMMAND + "a", Keys.BACK_SPACE)
 
             self.wait_element(
             self.loc.FIRST_NAME_FIELD
@@ -108,7 +106,7 @@ class UserProfile(BasePage):
             
             self.wait_element(
             self.loc.SURNAME_FIELD
-            ).send_keys(Keys.CONTROL + "a", Keys.DELETE)
+            ).send_keys(Keys.COMMAND + "a", Keys.BACK_SPACE)
 
             self.wait_element(
             self.loc.SURNAME_FIELD
@@ -126,6 +124,7 @@ class UserProfile(BasePage):
             self.wait_elements(
             self.loc.GENDER_MALE_RADIO_BUTTON
             )[0].click()
+            
             logger.info(" Радио-кнопка выбора мужского пола нажата ")
         except Exception as e:
             logger.info(" Радио-кнопка выбора мужского пола не нажата ")
@@ -139,13 +138,13 @@ class UserProfile(BasePage):
             self.wait_elements(
             self.loc.USER_INFO_FIELD
             )[4].click()
-            
-            self.wait_elements(
-            self.loc.USER_INFO_FIELD
-            )[0].send_keys(Keys.CONTROL + "a", Keys.DELETE)
 
             self.wait_elements(
-            self.loc.USER_INFO_FIELD
+            self.loc.INPUT_INFO
+            )[0].send_keys(Keys.COMMAND + "a", Keys.BACK_SPACE)
+
+            self.wait_elements(
+            self.loc.INPUT_INFO
             )[0].send_keys(info)
             logger.info(" Поле О себе успешно заполнено ")
         except Exception as e:
@@ -190,6 +189,9 @@ class UserProfile(BasePage):
             self.loc.SAVE_BUTTON
             )[1].click()
             logger.info("Кнопка Сохранить успешно нажата")
+            
+            logger.info("Ожидание скрытия кнопки Сохранить")
+            self.invisibility_of_all_elements(self.loc.SAVE_BUTTON)
         except Exception as e:
             logger.info(f" Не удалось нажать кнопку Сохранить  {e}")
             raise
@@ -198,9 +200,10 @@ class UserProfile(BasePage):
         """ Проверка успешного сохранении информации в поле 'Фамилия' """
         try:
             logger.info("Проверка валидации поля Фамилия")
-            check = self.wait_elements(
+            check = self.visibility_of_elements(
             self.loc.LAST_NAME_ASSERT
             )[0]
+            
             assert check.text == last_name, ">>> Ошибка с фамилией <<<"
             logger.info("Проверка поля 'Фамилия' успешна")
         except Exception as e:
@@ -346,7 +349,6 @@ class UserProfile(BasePage):
         except Exception as e:
             logger.info(f"Не успешная проверка поля  Департамент после редактирования")
 
-    def check_head_departament(self):
         
 
 

@@ -22,14 +22,45 @@ info = generate_random_string(10)
 
 action = ActionChains
 
+
+
+
 browser = webdriver.Chrome()
+
+# Переходим на страницу, где нужно получить куки (например, после авторизации)
 browser.get("https://app.staging.sphera.work/")
+
+# Максимизируем окно браузера
 browser.maximize_window()
-with open("cookies.json", "r") as file:
-    cookies = json.load(file)
-for cookie in cookies:
-    browser.add_cookie(cookie)
-    browser.refresh()
+
+time.sleep(40)
+
+# Получаем куки
+cookies = browser.get_cookies()
+
+# Сохраняем куки в файл
+with open("cookies.json", "w") as file:
+    json.dump(cookies, file)
+
+print("Куки успешно сохранены в файл cookies.json")
+
+# Закрываем браузер
+browser.quit()
+
+
+
+
+
+
+
+# browser = webdriver.Chrome()
+# browser.get("https://app.staging.sphera.work/")
+# browser.maximize_window()
+# with open("cookies.json", "r") as file:
+#     cookies = json.load(file)
+# for cookie in cookies:
+#     browser.add_cookie(cookie)
+#     browser.refresh()
 
 wait = WebDriverWait(browser, 10)
 
