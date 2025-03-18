@@ -1,3 +1,4 @@
+from pages.login_page import AuthorizationPage
 from pages.main_page import MainPage
 import random
 import string
@@ -8,6 +9,17 @@ def generate_random_string(length=8):
     letters_and_digits = string.ascii_letters + string.digits
     return ''.join(random.choice(letters_and_digits) for _ in range(length))
 
+email = "qa1@fusion.ru"
+code = "654321"
+@pytest.mark.login
+def test_01_authorization(browser):
+    auth_page = AuthorizationPage(browser)
+    auth_page.email_field(email)
+    auth_page.submit_button()
+    auth_page.one_time_code(code)
+    auth_page.enter_space_button()
+    auth_page.decline_notifications()
+
 
 @pytest.mark.smoke_main_page
 def test_03_create_channel_send_message__and_delete_channel(browser):  # Передаем фикстуру browser
@@ -16,7 +28,6 @@ def test_03_create_channel_send_message__and_delete_channel(browser):  # Пер�
     info_channel = generate_random_string(5) # Генерация рандомного описания канала
     rand_message = generate_random_string(5)
 
-    main.decline_notifications()
     main.create_channel_button() # Нажатие кнопки 'Создать канал'
     main.enter_name_channel(name_channel) # Ввод названия канала
     main.channel_info(info_channel) # Ввод описания канала
