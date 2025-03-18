@@ -1,17 +1,21 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import logging
+from utils.logger import Logger
 from utils.user_profile_locators import LocatorsUserProfile
 from pages.base_page import BasePage
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import random
 
-
 # Настройка логирования
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger(__name__)
 
+# TODO: add import custom logger
+
+logger = Logger()
 
 class UserProfile(BasePage):
     def __init__(self, browser):
@@ -20,101 +24,132 @@ class UserProfile(BasePage):
         """
         self.browser = browser
         self.wait = WebDriverWait(browser, 10)
-        self.loc = LocatorsUserProfile
+        self.locators = LocatorsUserProfile
         super(UserProfile, self).__init__(browser)
 
 
+    def _check_field(self, locator, expected_text, field_name):
+        """
+        Универсальный метод для проверки текста в поле.
+        
+        :param locator: Локатор элемента.
+        :param expected_text: Ожидаемый текст.
+        :param field_name: Название поля для логирования.
+        """
+        try:
+            logger.info(f"Проверка поля '{field_name}'")
+            elements = self.wait_elements(locator)
+            if not elements:
+                raise NoSuchElementException(f"Элемент '{field_name}' не найден")
+            
+            actual_text = elements[0].text
+            assert actual_text == expected_text, \
+                f"Ошибка в поле '{field_name}': ожидалось '{expected_text}', получено '{actual_text}'"
+            
+            logger.info(f"Проверка поля '{field_name}' успешна")
+        except (TimeoutException, NoSuchElementException, AssertionError) as e:
+            logger.error(f"Ошибка при проверке поля '{field_name}': {str(e)}")
+            raise
+
     def open_user_profile_modal_window(self):
         """ Нажатие по аватару пользователя в футере приложения """
-        logger.info("Нажатие по аватару пользователя в футере приложения")
+        
         try:
+            logger.info("Нажатие по аватару пользователя в футере приложения")
             self.visibility_of_elements(
-            self.loc.PROFILE_MODAL
+            self.locators.PROFILE_MODAL
             )[0].click()
             logger.info("Успешное нажатие по аватару пользователя")
         except Exception as e:
-            print(f"Не удалось нажать по аватару пользователя в футере приложения {e}")
+            logger.error(f"Не удалось нажать по аватару пользователя в футере приложения {e}")
             raise
 
     def open_user_settings_in_modal_window(self):
         """ Нажатие кнопкни 
         'Настройки пользователя' в открывшемся модальном окне' """
-        logger.info("Нажатие кнопкни 'Настройки пользователя'")
+        
         try:
+            logger.info("Попытка нажатие кнопкни 'Настройки пользователя'")
             self.visibility_of_elements(
-            self.loc.USER_PROFILE_SETTINGS
+            self.locators.USER_PROFILE_SETTINGS
             )[0].click()
             logger.info("Успешное нажатие по кнопке 'Настройки пользователя' ")
         except Exception as e:
-            print(f"Не удалось нажать на кнопку 'Настройки пользователя' {e}")
+            logger.error(f"Не удалось нажать на кнопку 'Настройки пользователя' {e}")
             raise
 
 
     def edit_information_button(self):
         """ Нажатие кнопки редактирование информации """
         try:
-            logger.info("Нажатие кнопки редактирования информации")
+            logger.info("Попытка нажатия кнопки редактирования информации")
             self.visibility_of_elements(
-            self.loc.REDACT_USER_INFO
+            self.locators.REDACT_USER_INFO
             )[2].click()
             logger.info("Успешное нажатие кнопки редактирования информации")
         except Exception as e:
-            logger.info(f"Не удалось нажать кнопку редактирования информации {e}")
+            logger.error(f"Не удалось нажать кнопку редактирования информации {e}")
             raise
 
     def user_last_name_field(self, last_name):
         """ Редактирование поля 'Фамилия' """
         try:
-            logger.info("Редактирование поля фамилия")
+            logger.info("Редактирование поля 'Фамилия'")
 
-            self.wait_element(
-            self.loc.LAST_NAME_FIELD
-            ).send_keys(Keys.COMMAND + "a", Keys.BACK_SPACE)
+            last_name_field = self.wait_element(self.locators.LAST_NAME_FIELD)
 
-            self.wait_element(
-            self.loc.LAST_NAME_FIELD
-            ).send_keys(last_name)
-            
-            logger.info("Поле 'Фамилия' успешно заполнена")
+            logger.info("Поле 'Фамилия' не пустое. Очистка поля.")
+            last_name_field.click()
+            last_name_field.send_keys(Keys.COMMAND + "a" + Keys.BACKSPACE)   
+            logger.info("Поле 'Фамилия' успешно очищено.")
+
+            logger.info(f"Заполнение поля 'Имя' значением: {last_name}")
+            last_name_field.send_keys(last_name)
+            logger.info(f"Поле 'Фамилия' успешно заполнено значением: {last_name}")
+
         except Exception as e:
-            logger.info(f"Не удалось заполнить поле 'Фамилия' {e}")
+            logger.error(f"Не удалось заполнить поле 'Фамилия': {e}")
             raise
-            
+
 
     def user_first_name_field(self, first_name):
-        """ Редактирование поля 'Имя' """
+        """Редактирование поля 'Имя'."""
         try:
-            logger.info("Редактирование поля 'Имя' ")
+            logger.info("Редактирование поля 'Имя'")
 
-            self.wait_element(
-            self.loc.FIRST_NAME_FIELD
-            ).send_keys(Keys.COMMAND + "a", Keys.BACK_SPACE)
+            first_name_field = self.wait_element(self.locators.FIRST_NAME_FIELD)
+            
+            logger.info("Поле 'Имя' не пустое. Очистка поля.")
+            first_name_field.click()
+            first_name_field.send_keys(Keys.COMMAND + "a" + Keys.BACKSPACE)      
+            logger.info("Поле 'Имя' успешно очищено.")
 
-            self.wait_element(
-            self.loc.FIRST_NAME_FIELD
-            ).send_keys(first_name)
+            logger.info(f"Заполнение поля 'Имя' значением: {first_name}")
+            first_name_field.send_keys(first_name)
+            logger.info(f"Поле 'Имя' успешно заполнено значением: {first_name}")
 
-            logger.info("Поле 'Имя' успешно заполнена")
         except Exception as e:
-            logger.info(f"Не удалось заполнить поле 'Имя' {e}")
+            logger.error(f"Не удалось заполнить поле 'Имя': {e}")
             raise
 
     def user_surname_field(self, surname):
         """ Редактирование поля 'Отчество' """
         try:
-            logger.info("Редактирование поля 'Отчество'")
-            
-            self.wait_element(
-            self.loc.SURNAME_FIELD
-            ).send_keys(Keys.COMMAND + "a", Keys.BACK_SPACE)
+            logger.info("Редактирование поля 'Имя'")
 
-            self.wait_element(
-            self.loc.SURNAME_FIELD
-            ).send_keys(surname)
+            surname_field = self.wait_element(self.locators.SURNAME_FIELD)
 
-            logger.info("Поле 'Отчество' успешно заполнена")
+            logger.info("Поле 'Имя' не пустое. Очистка поля.")
+            surname_field.send_keys(Keys.COMMAND + "a")  
+            surname_field.send_keys(Keys.BACKSPACE)     
+            logger.info("Поле 'Имя' успешно очищено.")
+
+            logger.info(f"Заполнение поля 'Имя' значением: {surname}")
+            surname_field.send_keys(surname)
+            logger.info(f"Поле 'Имя' успешно заполнено значением: {surname}")
+
         except Exception as e:
-            logger.info(f"Не удалось заполнить поле 'Отчество' {e}")
+            logger.error(f"Не удалось заполнить поле 'Имя': {e}")
             raise
 
     def gender_male_radio_button(self):
@@ -122,12 +157,12 @@ class UserProfile(BasePage):
         try:
             logger.info(" Клик по радио-кнопке выбора мужского пола ")
             self.wait_elements(
-            self.loc.GENDER_MALE_RADIO_BUTTON
+            self.locators.GENDER_MALE_RADIO_BUTTON
             )[0].click()
             
             logger.info(" Радио-кнопка выбора мужского пола нажата ")
         except Exception as e:
-            logger.info(" Радио-кнопка выбора мужского пола не нажата ")
+            logger.error(" Радио-кнопка выбора мужского пола не нажата ")
             raise
 
 
@@ -136,19 +171,24 @@ class UserProfile(BasePage):
         try:
             logger.info(" Попытка редактирования поля О себе ")
             self.wait_elements(
-            self.loc.USER_INFO_FIELD
+            self.locators.USER_INFO_FIELD
             )[4].click()
 
-            self.wait_elements(
-            self.loc.INPUT_INFO
-            )[0].send_keys(Keys.COMMAND + "a", Keys.BACK_SPACE)
+            info_field = self.wait_elements(
+            self.locators.INPUT_INFO
+            )[0]
+
+            info_field.click()
+            info_field.send_keys(Keys.COMMAND + "a" + Keys.BACKSPACE)
 
             self.wait_elements(
-            self.loc.INPUT_INFO
+            self.locators.INPUT_INFO
             )[0].send_keys(info)
+
+            
             logger.info(" Поле О себе успешно заполнено ")
         except Exception as e:
-            logger.info(f"Не удалось отредактировать поле О себе {e}")
+            logger.error(f"Не удалось отредактировать поле О себе {e}")
             raise
 
     
@@ -157,27 +197,27 @@ class UserProfile(BasePage):
         try:
             logger.info("Вызов плагина календаря")
             self.wait_element(
-            self.loc.DATE_OF_BIRTH_REACT_PLUGIN
+            self.locators.DATE_OF_BIRTH_REACT_PLUGIN
             ).click()
             logger.info("Выбор 'Февраль' ")
             february = self.visibility_of_elements(
-            self.loc.FEBRUARY_MONTH
+            self.locators.FEBRUARY_MONTH
             )[1]
             february.click()
             logger.info("Месяц Февраль выбран")
 
             logger.info("Ожидание появления элемента")
             self.visibility_of_element(
-            self.loc.DATE_OF_BIRTH_PLUGIN
+            self.locators.DATE_OF_BIRTH_PLUGIN
             )
 
             week = self.visibility_of_elements(
-            self.loc.WEEK_DATE_OF_BIRTH_PLUGIN
+            self.locators.WEEK_DATE_OF_BIRTH_PLUGIN
             )
             random.choice(week).click()
             logger.info("Рандомная дата рождения успешно выбрана через плагин календаря")
         except Exception as e:
-            logger.info(f"Не удалось выбрать дату рождения через плагин календаря {e}")
+            logger.error(f"Не удалось выбрать дату рождения через плагин календаря {e}")
             raise
 
 
@@ -186,55 +226,52 @@ class UserProfile(BasePage):
         try:
             logger.info(" Нажатие кнопки Сохранить ")
             self.wait_elements(
-            self.loc.SAVE_BUTTON
+            self.locators.SAVE_BUTTON
             )[1].click()
             logger.info("Кнопка Сохранить успешно нажата")
             
             logger.info("Ожидание скрытия кнопки Сохранить")
-            self.invisibility_of_all_elements(self.loc.SAVE_BUTTON)
+            self.invisibility_of_all_elements(self.locators.SAVE_BUTTON)
         except Exception as e:
-            logger.info(f" Не удалось нажать кнопку Сохранить  {e}")
+            logger.error(f" Не удалось нажать кнопку Сохранить  {e}")
             raise
 
     def check_last_name(self, last_name):
-        """ Проверка успешного сохранении информации в поле 'Фамилия' """
+        """Проверка успешного сохранения информации в поле 'Фамилия'."""
         try:
-            logger.info("Проверка валидации поля Фамилия")
-            check = self.visibility_of_elements(
-            self.loc.LAST_NAME_ASSERT
-            )[0]
-            
-            assert check.text == last_name, ">>> Ошибка с фамилией <<<"
-            logger.info("Проверка поля 'Фамилия' успешна")
+            logger.info("Проверка успешного сохранения информации в поле 'Фамилия'")
+            self._check_field(self.locators.LAST_NAME_ASSERT, last_name, "Фамилия")
         except Exception as e:
-            logger.info(f"Не удалось проверить валидацию поля 'Фамилия' {e} ")
-            raise
-
+            logger.error(f"Не удалось проверить поле 'Фамилия' {e}")
+            raise    
 
     def check_first_name(self, first_name):
-        """ Проверка успешного сохранении информации в поле 'Имя' """
+        """Проверка успешного сохранения информации в поле 'Имя'."""
         try:
-            logger.info("Проверка поля Имя")
-            check = self.wait_elements(
-            self.loc.FIRST_NAME_ASSERT
-            )[0]
-            assert check.text == first_name, ">>> Ошибка с именем <<<"
-            logger.info("Проверка валидации поля 'Имя' успешна")
+            logger.info("Проверка успешного сохранения информации в поле 'Имя'")
+            self._check_field(self.locators.FIRST_NAME_ASSERT, first_name, "Имя")
         except Exception as e:
-            logger.info(f"Не удалось проверить валидацию поля 'Имя' {e}")
+            logger.error(f"Не удалось проверить поле 'Имя' {e}")
             raise
 
+
     def check_surname(self, surname):
-        """ Проверка успешного сохранении информации в поле 'Отчество' """
+        """Проверка успешного сохранения информации в поле 'Отчество'."""
         try:
-            logger.info("Проверка поля Отчество")
-            check = self.wait_elements(
-            self.loc.SURNAME_ASSERT
-            )[0]
-            assert check.text == surname, ">>> Ошибка с отчеством <<<"
-            logger.info("Проверка валидации поля 'Отчество' успешна")
+            logger.info("Проверка успешного сохранения информации в поле 'Отчество'")    
+            self._check_field(self.locators.SURNAME_ASSERT, surname, "Отчество")
         except Exception as e:
-            logger.info(f"Не удалось проверить валидацию поля 'Отчество' {e}")
+            logger.error(f"Не удалось проверить поле 'Отчество' {e}")
+            raise
+
+
+    def check_info(self, info):
+        """Проверка успешного сохранения информации в поле 'О себе'."""
+        try:
+            logger.info("Проверка успешного сохранения информации в поле 'О себе'")    
+            self._check_field(self.locators.USER_INFO_ASSERT, info, "О себе")
+        except Exception as e:
+            logger.error(f"Не удалось проверить поле 'О себе' {e}")
             raise
 
     def check_radio_button_gender_male(self):
@@ -243,26 +280,12 @@ class UserProfile(BasePage):
         try:
             logger.info("Проверка радио-кнопки мужского пола")
             check = self.wait_elements(
-            self.loc.GENDER_MALE_RADIO_BUTTON_ASSERT
+            self.locators.GENDER_MALE_RADIO_BUTTON_ASSERT
             )[0]
             assert check.text == "Мужской", ">>> Ошибка с выбором пола <<<"
             logger.info("Проверка валидации радио-кнопки мужского пола успешна")
         except Exception as e:
-            logger.info(f"Проверка валидации радио-кнопки мужского пола НЕ успешна {e}")
-            raise
-
-
-    def check_info(self, info):
-        """ Проверка успешного сохранении информации в поле 'О себе' """
-        try:
-            logger.info("Проверка поля О себе")
-            check = self.wait_elements(
-            self.loc.USER_INFO_ASSERT
-            )[0]
-            assert check.text == info, ">>> Ошибка с полем 'О себе' <<<" 
-            logger.info("Проверка валидации поля 'О себе ' успешна ")
-        except Exception as e:
-            logger.info("Проверка валидации поля 'О себе НЕ ' успешна ")
+            logger.error(f"Проверка валидации радио-кнопки мужского пола НЕ успешна {e}")
             raise
 
 
@@ -275,7 +298,7 @@ class UserProfile(BasePage):
             )[3].click()
             logger.info("Кнопка редактирования нажата")
         except Exception as e:
-            logger.info(f"Не удалось нажать кнопку редактирования полей 'Компания'")
+            logger.error(f"Не удалось нажать кнопку редактирования полей 'Компания'")
 
     
     def redact_position_info(self):
@@ -293,7 +316,7 @@ class UserProfile(BasePage):
             ).click()
             logger.info("Выбран первый элемент выпадающего списка")
         except Exception as e:
-            logger.info(f"Не удалось выбрать элемент из выпадающего списка 'Должность'")
+            logger.error(f"Не удалось выбрать элемент из выпадающего списка 'Должность'")
 
     
     def redact_departament_info(self):
@@ -308,8 +331,9 @@ class UserProfile(BasePage):
             self.visibility_of_elements(
             (By. CLASS_NAME, "select__option")
             )[1].click()
+            logger.info("Выбран второй элемент выпадающего списка 'Департамен'")
         except Exception as e:
-            logger.info(f"Не удалось выбрать элемент из выпадающего списка 'Департамент'")
+            logger.error(f"Не удалось выбрать элемент из выпадающего списка 'Департамент'")
 
     def redact_head_of_department(self):
         """ Редактирование поля 'Руководитель' """
@@ -323,32 +347,7 @@ class UserProfile(BasePage):
             self.visibility_of_elements(
             (By. CLASS_NAME, "select__option")
             )[1].click()
+            logger.info("Выбран второй элемент выпадающего списка 'Руководитель'")
         except Exception as e:
-            logger.info(f"Не удалось выбрать элемент из выпадающего списка 'Руководитель'")
-
-            
-    def check_position(self):
-        """ Проверка поля 'Должность' после редактирования """
-        try:
-            check = self.wait_elements(
-            (By.CLASS_NAME, "select__single-value")
-            )[0]
-            first_option = check.text
-            assert first_option == check.text, "Ошибка проверки поля 'Должность' "
-        except Exception as e:
-            logger.info(f"Не успешная проверка поля должность после редактирования")
-    
-    def check_department(self):
-        """ Проверка поля 'Департамент' после редактирования """
-        try:
-            check = self.wait_elements(
-            (By.CLASS_NAME, "select__single-value")
-            )[1]
-            second_option = check.text
-            assert second_option == check.text, "Ошибка проверки поля 'Департамент'"
-        except Exception as e:
-            logger.info(f"Не успешная проверка поля  Департамент после редактирования")
-
-        
-
+            logger.error(f"Не удалось выбрать элемент из выпадающего списка 'Руководитель'")
 

@@ -29,5 +29,3 @@ class LocatorsUserProfile:
     USER_INFO_ASSERT = (By. XPATH, "//form/div[2]/div[6]/div")
 
 
-    last_name = (By. CLASS_NAME, "field-value")
-

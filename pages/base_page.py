@@ -3,9 +3,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 class BasePage(object):
-
     def __init__(self, browser):
         self.browser = browser
+        
+
 
     def wait_element(self, locator):
         """Ожидание появления элемента на странице."""
@@ -14,7 +15,7 @@ class BasePage(object):
                 EC.presence_of_element_located(locator)
             )
         except TimeoutException:
-            print("Элемент не найден")
+            print(f"Элемент {locator} не найден")
 
     def wait_elements(self, locator):
         """Ожидание появления элементов на странице."""
@@ -23,27 +24,27 @@ class BasePage(object):
                 EC.presence_of_all_elements_located(locator)
             )
         except TimeoutException:
-            print("Элемент не найден")
+            print(f"Элемент {locator} не найден")
 
     def element_to_be_clickable(self, locator):
         """Ожидание, пока элемент станет кликабельным."""
         try:
-            return WebDriverWait(self.browser, 10).until(
+            return WebDriverWait(self.browser, 20).until(
                 EC.element_to_be_clickable(locator)
             )
         except TimeoutException:
-            print("Элемент не найден")
+            print(f"Элемент {locator} не найден")
 
 
 
     def visibility_of_element(self, locator):
         """Ожидание пока элемент будет видимым"""
         try:
-            return WebDriverWait(self.browser, 10).until(
+            return WebDriverWait(self.browser, 20).until(
                 EC.visibility_of_element_located(locator)
             )
         except TimeoutException:
-            print("Элемент не найден")  
+            print(f"Элемент {locator} не найден")  
 
     def visibility_of_elements(self, locator):
         """Ожидание пока элемент будет видимым"""
@@ -52,7 +53,7 @@ class BasePage(object):
                 EC.visibility_of_all_elements_located(locator)
             )
         except TimeoutException:
-            print("Элемент не найден")  
+            print(f"Элемент {locator} не найден")  
 
 
 
@@ -63,7 +64,7 @@ class BasePage(object):
                 EC.invisibility_of_element_located(locator)
             )
         except TimeoutException:
-            print("Элемент не найден")  
+            print(f"Элемент {locator} не найден")  
 
 
     def invisibility_of_all_elements(self, locator):

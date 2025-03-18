@@ -7,8 +7,9 @@ def generate_random_string(length=8):
     letters_and_digits = string.ascii_letters + string.digits
     return ''.join(random.choice(letters_and_digits) for _ in range(length))
 
-
+@pytest.mark.redact_user_profile
 def test_02_open_user_profile_and_redact_info(browser): # Передаем фикстуру browser
+    
     user = UserProfile(browser) # Создаем экземпляр UserProfile, передавая browser
     
     last_name = generate_random_string(10)# Генерация рандомной Фамилии пользователя

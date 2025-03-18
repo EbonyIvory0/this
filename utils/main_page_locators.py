@@ -6,6 +6,8 @@ class LocatorsMainPage:
     CHANNEL_NAME_FIELD = (By.ID, "name")
     CHANNEL_INFO_FIELD = (By.ID, "description")
     CONTINUE_BUTTON = (By.XPATH, "//button[text()='Продолжить']")
+    ALL_CHANNELS = (By. CLASS_NAME, "channel-data-container")
+
 
     HEADER_BUTTON = (By.CLASS_NAME, "header__button")
     MODAL_WINDOW = (By.CLASS_NAME, "dialog__paper")
@@ -24,3 +26,12 @@ class LocatorsMainPage:
     SEND_MESSAGE_BUTTON = (By.XPATH, '//button[text()="Отправить"]')
     MESSAGE_TEXT = (By.CLASS_NAME, "message-text")
 
+    ALL_MESSAGES_IN_CHANNEL = (By.CSS_SELECTOR, ".message-card > .message-text > p")
+    MESSAGE_MENU = (By.CLASS_NAME, "message-action-buttons-container")
+    OTHER_ACTIONS = (By.CSS_SELECTOR, 'button[aria-label="Другие действия"]')
+    DELETE_MESSAGE = (By. CLASS_NAME, "menu-item")
+    CONFIRM_DELETE_MESSAGE = (By. CLASS_NAME, "error-button")
+
+
+    MODAL_NOTIFICATIONS = (By.CLASS_NAME, "MuiDialog-paperFullWidth")
+    DECLINE_NOTIFICATIONS_BUTTON = (By. CLASS_NAME, "MuiButton-outlinedSizeMedium")
