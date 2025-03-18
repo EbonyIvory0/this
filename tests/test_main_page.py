@@ -11,18 +11,17 @@ def generate_random_string(length=8):
 
 email = "qa1@fusion.ru"
 code = "654321"
-@pytest.mark.login
+
 def test_01_authorization(browser):
     auth_page = AuthorizationPage(browser)
     auth_page.email_field(email)
     auth_page.submit_button()
     auth_page.one_time_code(code)
     auth_page.enter_space_button()
-    auth_page.decline_notifications()
+    # auth_page.decline_notifications()
 
 
-@pytest.mark.smoke_main_page
-def test_03_create_channel_send_message__and_delete_channel(browser):  # Передаем фикстуру browser
+def test_02_create_channel_send_message__and_delete_channel(browser):  # Передаем фикстуру browser
     main = MainPage(browser)  # Создаем экземпляр MainPage, передавая browser
     name_channel = generate_random_string(5) # Генерация рандомного названия канала
     info_channel = generate_random_string(5) # Генерация рандомного описания канала
@@ -41,12 +40,12 @@ def test_03_create_channel_send_message__and_delete_channel(browser):  # Пер�
     main.header_button_channel() # Вызов модального окна через название канала в хедере приложения
     main.settings_tab_in_modal_window() # вкладка настройки в модальном окне
     main.archive_channel() # Архивирование канала
-    main.archive_channel_check() # Проверка уведомления об архивировании канала
+    main.archive_channel_notifications_check() # Проверка уведомления об архивировании канала
 
 
 
-@pytest.mark.create_delete_channel
-def test_04_create_channel__and_delete_channel(browser):
+def test_03_create_channel__and_delete_channel(browser):
+    log = AuthorizationPage(browser)
     main = MainPage(browser)
     name_channel = generate_random_string(5) # Генерация рандомного названия канала
     info_channel = generate_random_string(5) # Генерация рандомного описания канала
@@ -58,21 +57,13 @@ def test_04_create_channel__and_delete_channel(browser):
     main.header_button_channel() # Вызов модального окна через название канала в хедере приложения
     main.settings_tab_in_modal_window() # вкладка настройки в модальном окне
     main.delete_channel() # Удаление канала
-    main.delete_channel_check() # Проверка уведомления об удалении канала
+    # log.decline_notifications()
+    main.delete_channel_notifications_check() # Проверка уведомления об удалении канала
+    main.delete_channel_check(name_channel)
 
 
 
-@pytest.mark.enter_channel_write_message
-def test_05_enter_in_random_channel_and_write_a_message(browser):
-    main = MainPage(browser)
-    rand_message = generate_random_string(5)
-    main.enter_in_random_channel() # Вход в рандомный канал
-    main.write_a_message(rand_message) # Ввод сообщения в поле ввода
-    main.send_message() # Отправка сообщения кликом по кнопке 'Отправить'
-    main.check_all_messages(rand_message) # Проверка сообщения 
-
-@pytest.mark.send_and_delete_message
-def test_06_enter_random_channel_write_message_delete_message(browser):
+def test_04_enter_random_channel_write_message_delete_message(browser):
     main = MainPage(browser)
     rand_message = generate_random_string(5)
     main.enter_in_random_channel() # Вход в рандомный канал

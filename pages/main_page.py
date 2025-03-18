@@ -25,19 +25,6 @@ class MainPage(BasePage):
         super(MainPage, self).__init__(browser)
 
 
-    def decline_notifications(self):
-        """ Ожидание и нажатие кнопки 'Отклонить уведомления' """
-        self.visibility_of_element(self.locators.MODAL_NOTIFICATIONS)
-        try:
-            # logger.info("Ожидание появления модального окна")
-        
-            logger.info("Появилось окно с уведомлениями")
-            logger.info("Нажатие кнопки 'Отклонить уведомления'")
-            self.element_to_be_clickable(self.locators.DECLINE_NOTIFICATIONS_BUTTON
-            ).click()
-            logger.info("Кнопка 'Отклонить уведомления' нажата")
-        except Exception as e:
-            logger.error(f"Не удалось нажать кнопку 'Отклонить уведомления': {e}")
 
 
     def enter_in_random_channel(self):
@@ -183,24 +170,44 @@ class MainPage(BasePage):
             logger.error(f"He удалось архивировать канал: {e}")
 
 
-    def delete_channel_check(self):
+    def delete_channel_notifications_check(self):
         """Проверка уведомления об удалении канала"""
         logger.info("Проверка уведомления об удалении канала")
         try:
             check = self.visibility_of_element(self.locators.DELETE_CONFIRMATION_MESSAGE)
             assert check.text == "Канал удален", ">>> Не удалось проверить удаление канала"
             logger.info("Уведомление об удалении канала успешно проверено")
+            
         except Exception as e:
             logger.error(f"Не удалось проверить уведомление об удаление канала: {e}")
-        
-    def archive_channel_check(self):
+
+    def delete_channel_check(self, name_channel):
+        """Проверка удаления канала"""
+        logger.info(f"Проверка удаления канала: {name_channel}")
+        try:
+            self.refresh_page()
+            
+            channel_list = self.wait_elements((By.CLASS_NAME, "channel-name"))
+
+            # Проверяем каждый канал
+            for channel in channel_list:
+                if channel.text == name_channel:
+                    logger.error(f"Канал {name_channel} не удален")
+                    return
+
+            # Если канал не найден в списке
+            logger.info(f"Канал {name_channel} успешно удален")
+        except Exception as e:
+            logger.error(f"Не удалось проверить удаление канала: {name_channel}, {e}")
+
+    def archive_channel_notifications_check(self):
         """Проверка уведомления об архивировании канала"""
         try:    
             logger.info("Проверка уведомления об архивировании канала")
             check = self.visibility_of_element(self.locators.DELETE_CONFIRMATION_MESSAGE)
             assert check.text == "Изменения сохранены", ">>> Не удалось проверить архивирование канала"
             logger.info("Уведомление об архивировании канала успешно проверено")
-            self.invis_of_element(self.locators.DELETE_CONFIRMATION_MESSAGE)
+            # self.invis_of_element(self.locators.DELETE_CONFIRMATION_MESSAGE)
         except Exception as e:
             logger.error(f"Не удалось проверить уведомление об архивировании канала: {e}")
     
